@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Employee Locations Map</title>
-    
+
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     
     <!-- Leaflet MarkerCluster CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css" />
-    
+
     <style>
         #map {
             height: 600px;
@@ -25,6 +25,9 @@
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    
+    <!-- Leaflet MarkerCluster JS -->
+    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 
     <script>
         // Initialize the map centered on Australia
@@ -36,33 +39,34 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        // Initialize the marker cluster group
-        var markers = L.markerClusterGroup();
-
-            <!-- Leaflet MarkerCluster JS -->
-    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+        // Initialize the marker cluster group with a custom radius
+        var markers = L.markerClusterGroup({
+            maxClusterRadius: 50  // Custom radius: smaller number = tighter clusters
+        });
 
         // Fetch the employee data from the JSON file
         fetch('employee_data.json')
             .then(response => response.json())
             .then(data => {
+                console.log("Employee data loaded:", data);  // Debugging: log the data to the console
+
                 // Loop through the employee data and add markers to the cluster group
                 data.forEach(function(employee) {
                     if (employee.latitude && employee.longitude) {
+                        console.log(`Adding marker for ${employee.Name} at [${employee.latitude}, ${employee.longitude}]`);
+
                         var marker = L.marker([employee.latitude, employee.longitude])
                             .bindPopup(`<b>${employee.Name}</b><br>Postcode: ${employee.Address}`);
-                        
+
                         // Add marker to the cluster group
                         markers.addLayer(marker);
                     }
                 });
 
-                // Add the clustered markers to the map
+                // After adding all markers, add the cluster group to the map
                 map.addLayer(markers);
             })
             .catch(error => console.error('Error loading JSON data:', error));
     </script>
 </body>
-</html>
-
 </html>
