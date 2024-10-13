@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Employee Locations Map</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h3>Employee Locations</h3>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+
+    <script>
+        // Initialize the map centered on Australia
+        var map = L.map('map').setView([-25.2744, 133.7751], 4);
+
+        // Load OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 18,
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Fetch the employee data from the JSON file
+        fetch('employee_data.json')  // Make sure 'employee_data.json' is in the same directory as this HTML file
+            .then(response => response.json())
+            .then(data => {
+                // Loop through the employee data and add markers
+                data.forEach(function(employee) {
+                    if (employee.latitude && employee.longitude) {
+                        L.marker([employee.latitude, employee.longitude])
+                          .addTo(map)
+                          .bindPopup(`<b>${employee.Name}</b><br>Postcode: ${employee.Postcode}`);
+                    }
+                });
+            })
+            .catch(error => console.error('Error loading JSON data:', error));  // Debugging catch for errors
+    </script>
+</body>
+</html>
